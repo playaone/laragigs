@@ -35,20 +35,47 @@ class ListingController extends Controller
             'description'=> 'required'
         ]);
 
+        if($request->hasFile('logo')){
+            $form['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
         Listing::create($form);
 
-        return redirect('/listings/create')->with('message', 'Listing added successfully');
+        return redirect('/')->with('message', 'Listing added');
+    }
+
+    // update listing
+    public function update(Request $request, Listing $listing){
+        $form = $request->validate([
+            'title'=> 'required',
+            'company'=> ['required'],
+            'location'=> 'required',
+            'website'=> 'required',
+            'email'=> ['required', 'email'],
+            'tags'=> 'required',
+            'description'=> 'required'
+        ]);
+
+        if($request->hasFile('logo')){
+            $form['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $listing->update($form);
+
+        return back()->with('message', 'Listing updated');
     }
 
     // edit
-    public function edit(Listing $listing){}
+    public function edit(Listing $listing){
+        return view('listings.edit', ['listing' => $listing]);
+    }
 
-    // update
-    public function update(Request $request, Listing $listing){}
+    // delete listing
+    public function delete(Listing $listing){
+        $listing->delete();
+        return redirect('/')->with('message', 'Listing Deleted');
+    }
 
-    // destroy
-    public function destroy(Listing $listing){}
-
-    // destroy
+    // restore
     public function restore(Request $request, Listing $listing){}
 }
